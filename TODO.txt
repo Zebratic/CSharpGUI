@@ -1,0 +1,46 @@
+﻿BUGS:
+- Fix Mousegrab point getting offset when dragging fast
+X Fix FPS Counter
+X Fix Text rendering on top of other windows
+X Fix multiple windows able to be dragged together
+X Fix Particles stay still when no updates (make timer)
+X Fix checkbox text clickable area
+- Fix Button + TextBox text location is moved a bit too far right
+- Fix particle render double (INCREASE PERFORMANCE)
+- Fix particle text outline
+X Fix particle sliding along top Y and Left X
+- Fix textbox cursor not being in correct width position (also breaks when text is nothing)
+
+
+
+CONTROLS:
+X Text control
+/ TextBox control
+	X Get key strokes
+	X Insert key strokes to textbox
+	- Make characters captical if capslock is enabled (X Shift)
+	X Blink cursor  (2000ms per full blink) -> Show cursor and reset timer on enter.
+X Button control
+- Combo box control
+X Switch/checkbox control (togglable)
+- Slider control
+- Seperator control
+/ Particle control
+- Color picker
+
+
+
+
+FEATURES:
+X Particles effect (Points getting random position outside screen with direction and speed, if 2 points are close (withing a certain distance, draw line from point to point))
+- Particle style (Polygons, 3D Cubes, Dicks?)
+X Make particles respawn outside window and move towards the window
+X 3D Window Option
+- Make window controls automatically place themselfs correctly inside a window
+- Make controls automatically light up when mouse is on top
+- Implement GHook to hook into other applications
+- Window resize
+X Outlined text
+X Global Window Style/Theme (Everything visual)
+- Make textbox text scroll when inputting text
+X Manual drawing
