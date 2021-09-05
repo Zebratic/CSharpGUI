@@ -1,4 +1,4 @@
-﻿#region Using's
+#region Using's
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -378,7 +378,7 @@ namespace CSharpGUI
                                                     e.Graphics.DrawLine(new Pen(CurrentTheme.StringColor, CurrentTheme.OutlineSize / 2), p1, p2);
                                                 }
                                             }
-                                            
+
                                             #endregion
 
                                             #region Render string
@@ -407,7 +407,7 @@ namespace CSharpGUI
                                             SizeF CheckboxStringSize = e.Graphics.MeasureString(CheckboxText, CurrentTheme.Font);
                                             int CheckboxSize = (int)(CurrentTheme.Font.Size - (CurrentTheme.Font.Size / 4));
                                             #endregion
-                                            
+
                                             #region Render checkbox
                                             #region Render checkbox base
                                             Rectangle CheckboxRect = new Rectangle();
@@ -564,7 +564,7 @@ namespace CSharpGUI
         {
             Point MousePos = e.Location;
             #region Window Drag
-            if (e.Button == MouseButtons.Left && Window.Dragable)
+            if (e.Button == MouseButtons.Left && Window.Dragable && Window.Visible)
             {
                 if (MousePos.X > TargetForm.Width || MousePos.X < 0 || MousePos.Y > TargetForm.Height || MousePos.Y < 0)
                     return;
@@ -623,7 +623,7 @@ namespace CSharpGUI
             {
                 foreach (Controls.Button button in Window.Controls.OfType<Controls.Button>())
                 {
-                    if (button.ClickArea.IsPointInside(MousePos))
+                    if (button.ClickArea.IsPointInside(MousePos) && button.Visible)
                     {
                         try
                         {
@@ -644,7 +644,7 @@ namespace CSharpGUI
             {
                 foreach (Controls.Checkbox checkbox in Window.Controls.OfType<Controls.Checkbox>())
                 {
-                    if (checkbox.ClickArea.IsPointInside(MousePos))
+                    if (checkbox.ClickArea.IsPointInside(MousePos) && checkbox.Visible)
                     {
                         checkbox.Checked = !checkbox.Checked;
                     }
@@ -657,7 +657,7 @@ namespace CSharpGUI
             {
                 foreach (Controls.TextBox textbox in Window.Controls.OfType<Controls.TextBox>())
                 {
-                    if (textbox.ClickArea.IsPointInside(MousePos))
+                    if (textbox.ClickArea.IsPointInside(MousePos) && textbox.Visible)
                     {
                         textbox.Editing = true;
                         textbox.CursorShown = true;
@@ -917,13 +917,13 @@ namespace CSharpGUI
             {
                 public string Text { get; set; }
                 public float TextSize { get; set; }
-                public int TextLimit{ get; set; }
-                public bool NumbersOnly{ get; set; }
+                public int TextLimit { get; set; }
+                public bool NumbersOnly { get; set; }
                 public Size Size { get; set; }
                 public Rectangle ClickArea { get; set; }
                 public bool LocationPredefined { get; set; }
                 public Point Location { get; set; }
-                public bool Editing{ get; set; }
+                public bool Editing { get; set; }
                 public int CursorValue { get; set; }
                 public bool CursorShown { get; set; }
                 public bool Visible { get; set; }
