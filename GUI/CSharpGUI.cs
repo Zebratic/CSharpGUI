@@ -139,9 +139,10 @@ namespace CSharpGUI
                             #region Render Particles by Style
                             if (Style == ParticleStyle.Polygons)
                             {
-                                e.Graphics.DrawEllipse(Pens.Black, new Rectangle(particle.Location, new Size(ParticleSize, ParticleSize)));
+                                e.Graphics.DrawEllipse(Pens.Black, new Rectangle(new Point(particle.Location.X - (ParticleSize / 2), particle.Location.Y - (ParticleSize / 2)), new Size(ParticleSize, ParticleSize)));
 
                                 #region Draw lines between particles
+                                
                                 foreach (Controls.Particles.Particle particle2 in particles)
                                 {
                                     if (particle != particle2)
@@ -170,10 +171,14 @@ namespace CSharpGUI
                                 e.Graphics.DrawString(particle.Text, CurrentTheme.Font, new SolidBrush(Color.Black), particle.Location);
                                 #endregion
                             }
-
                             else if (Style == ParticleStyle.Dicks)
                             {
                                 // Render some PPs on screen ;)
+
+                                
+
+
+                                e.Graphics.DrawEllipse(Pens.Black, new Rectangle(new Point(particle.Location.X - (ParticleSize / 2), particle.Location.Y - (ParticleSize / 2)), new Size(ParticleSize, ParticleSize)));
                             }
                             #endregion
                         }

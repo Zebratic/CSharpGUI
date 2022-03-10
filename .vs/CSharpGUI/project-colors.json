@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "e9e16280-ddb0-42c7-a01e-eaf43e3e837d": {
+      "ProjectGuid": "e9e16280-ddb0-42c7-a01e-eaf43e3e837d",
+      "DisplayName": "CSharpGUITest",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
