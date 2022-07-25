@@ -1,13 +1,5 @@
-D:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csprojAssemblyReference.cache
-D:\Work\CSharpGUI\obj\Debug\CSharpGUI.TestWindow.resources
-D:\Work\CSharpGUI\obj\Debug\CSharpGUI.Properties.Resources.resources
 D:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.GenerateResource.cache
 D:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.CoreCompileInputs.cache
-D:\Work\CSharpGUI\bin\Debug\CSharpGUI.exe.config
-D:\Work\CSharpGUI\bin\Debug\CSharpGUI.exe
-D:\Work\CSharpGUI\bin\Debug\CSharpGUI.pdb
-D:\Work\CSharpGUI\obj\Debug\CSharpGUI.exe
-D:\Work\CSharpGUI\obj\Debug\CSharpGUI.pdb
 C:\Work\CSharpGUI\bin\Debug\CSharpGUI.exe.config
 C:\Work\CSharpGUI\bin\Debug\CSharpGUI.exe
 C:\Work\CSharpGUI\bin\Debug\CSharpGUI.pdb
@@ -19,3 +11,12 @@ C:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.GenerateResource.cache
 C:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.CoreCompileInputs.cache
 C:\Work\CSharpGUI\obj\Debug\CSharpGUI.exe
 C:\Work\CSharpGUI\obj\Debug\CSharpGUI.pdb
+D:\Work\CSharpGUI\bin\Debug\CSharpGUI_Test.exe.config
+D:\Work\CSharpGUI\bin\Debug\CSharpGUI_Test.exe
+D:\Work\CSharpGUI\bin\Debug\CSharpGUI_Test.pdb
+D:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.AssemblyReference.cache
+D:\Work\CSharpGUI\obj\Debug\CSharpGUITest.csproj.SuggestedBindingRedirects.cache
+D:\Work\CSharpGUI\obj\Debug\CSharpGUI_Test.TestWindow.resources
+D:\Work\CSharpGUI\obj\Debug\CSharpGUI_Test.Properties.Resources.resources
+D:\Work\CSharpGUI\obj\Debug\CSharpGUI_Test.exe
+D:\Work\CSharpGUI\obj\Debug\CSharpGUI_Test.pdb

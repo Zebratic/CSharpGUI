@@ -9,8 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GUI;
 
-namespace CSharpGUI
+namespace CSharpGUI_Test
 {
     public partial class TestWindow : Form
     {
@@ -22,6 +23,7 @@ namespace CSharpGUI
         public CSharpGUI.Controls.Checkbox Spinbot;
         public CSharpGUI.Controls.Checkbox BoxESP;
         public CSharpGUI.Controls.Checkbox CornerESP;
+        public CSharpGUI.Controls.Slider Fov;
         public CSharpGUI.Controls.Label FPSText;
         public CSharpGUI.Controls.TextBox TextBox;
         public CSharpGUI.Controls.Button Button;
@@ -34,30 +36,24 @@ namespace CSharpGUI
             this.DoubleBuffered = true; // IMPORTANT TO REMOVE FLICKER
             MyGUI.Setup(this);
 
-            Menu = new CSharpGUI.Controls.Window(MyGUI, "CSharpGUI Example Window", new Size(345, 220), true, false, true);
-            Aimbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Aimbot", true, CSharpGUI.CheckedStyle.Switch, Color.DarkGray, new Point(10, 10));
-            SilentAimbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Silent Aimbot", true, CSharpGUI.CheckedStyle.SwitchInverted, Color.DarkGray, new Point(10, 30));
-            Spinbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Spinbot", true, CSharpGUI.CheckedStyle.Checkmark, Color.DarkGray, new Point(10, 50));
-            BoxESP = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Box ESP", true, CSharpGUI.CheckedStyle.X, Color.DarkGray, new Point(10, 70));
-            CornerESP = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Corner ESP", true, CSharpGUI.CheckedStyle.Filled, Color.DarkGray, new Point(10, 90));
-            FPSText = new CSharpGUI.Controls.Label(MyGUI, Menu, "FPS: " + MyGUI.FPS, new Point(10, 110));
-            TextBox = new CSharpGUI.Controls.TextBox(MyGUI, Menu, "MyTextbox", 25, false, new Size(180, 15), new Point(10, 130));
-            Button = new CSharpGUI.Controls.Button(MyGUI, Menu, "SAVE", new Action(ButtonAction), new Size(50, 15), new Point(10, 150));
+            Menu = new CSharpGUI.Controls.Window(MyGUI, "CSharpGUI Example Window", new Size(0, 0), true, false, true);
+            Aimbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Aimbot", true, CSharpGUI.CheckedStyle.Switch, Color.DarkGray);
+            SilentAimbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Silent Aimbot", true, CSharpGUI.CheckedStyle.SwitchInverted, Color.DarkGray);
+            Spinbot = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Spinbot", true, CSharpGUI.CheckedStyle.Checkmark, Color.DarkGray);
+            BoxESP = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Box ESP", true, CSharpGUI.CheckedStyle.X, Color.DarkGray);
+            CornerESP = new CSharpGUI.Controls.Checkbox(MyGUI, Menu, "Enable Corner ESP", true, CSharpGUI.CheckedStyle.Filled, Color.DarkGray);
+            Fov = new CSharpGUI.Controls.Slider(MyGUI, Menu, "Aim FOV [%°]", 90, 0, 360, false, new Size(200, 20));
+            FPSText = new CSharpGUI.Controls.Label(MyGUI, Menu, "FPS: " + MyGUI.FPS);
+            TextBox = new CSharpGUI.Controls.TextBox(MyGUI, Menu, "MyTextbox", 25, false, new Size(180, 15));
+            Button = new CSharpGUI.Controls.Button(MyGUI, Menu, "Randomize Theme", new Action(ChangeTheme), new Size(150, 30));
 
             string[] textarray = { "Zebratic", "MintyFN", "CSharpGUI" };
             Particles = new CSharpGUI.Controls.Particles(MyGUI, CSharpGUI.ParticleStyle.Polygons, 100, 2, 0, 90, 1, textarray);
         }
-
-        public void ButtonAction()
-        {
-            for (int i = 0; i < 500; i++)
-            {
-                MyGUI.Overlay.DrawString("Saved!", MyGUI.CurrentTheme.Font, new SolidBrush(Color.Black), new Point(10, 10));
-            }
-        }
-
+        
         public void ChangeTheme()
         {
+            Menu.Window3D = (rnd.Next(0, 2) == 0);
             MyTheme.ControlColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             MyTheme.ControlOutlineColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             MyTheme.Font = new Font(FontFamily.GenericSansSerif, 17, FontStyle.Regular);
@@ -66,6 +62,8 @@ namespace CSharpGUI
             MyTheme.StringOutlineColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             MyTheme.WindowColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             MyTheme.WindowOutlineColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            MyTheme.ControlMargin = new Point(rnd.Next(3, 20), rnd.Next(3, 20));
+            MyTheme.ControlPadding = new Point(rnd.Next(3, 20), rnd.Next(3, 20));
             MyGUI.ApplyTheme(MyTheme);
         }
 

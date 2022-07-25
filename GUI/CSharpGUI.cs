@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 #endregion
 
-namespace CSharpGUI
+namespace GUI
 {
     public class CSharpGUI
     {
@@ -34,6 +34,8 @@ namespace CSharpGUI
         public class Theme
         {
             public int OutlineSize = 2;
+            public Point ControlMargin = new Point(5, 5);
+            public Point ControlPadding = new Point(5, 5);
             public Color StringColor = Color.White;
             public Color StringOutlineColor = Color.Black;
             public Color WindowColor = Color.DarkBlue;
@@ -72,7 +74,7 @@ namespace CSharpGUI
                 Bm = new Bitmap(Target.Width, Target.Height);
                 Overlay = TargetForm.CreateGraphics();
                 Overlay.Clear(TargetForm.BackColor);
-                new Thread(() => ParticleTimer(0)).Start();
+                new Thread(() => ParticleTimer(1)).Start();
                 TargetForm.Paint += delegate (object sender, PaintEventArgs e) { Window_Paint(sender, e); };
                 TargetForm.FormClosing += delegate (object sender, FormClosingEventArgs e) { Window_FormClosing(sender, e); };
 
@@ -101,7 +103,7 @@ namespace CSharpGUI
             //e.Graphics.DrawImage(Bm, 0, 0);
             try
             {
-                foreach (var control in AddedParticles)
+                foreach (Controls.Particles control in AddedParticles)
                 {
                     if (control.GetType() == typeof(Controls.Particles))
                     {
@@ -117,75 +119,74 @@ namespace CSharpGUI
                         Point Location = w.Location;
                         Size Size = w.Size;
                         List<Controls.Particles.Particle> particles = w.ParticlesList;
+                        bool Visible = w.Visible;
                         #endregion
 
-                        foreach (Controls.Particles.Particle particle in particles)
+                        if (Visible)
                         {
-                            #region Move Particle
-                            if (particle.Location.X >= Size.Width || particle.Location.Y >= Size.Height || particle.Location.X <= 0 || particle.Location.Y <= 0)
+                            foreach (Controls.Particles.Particle particle in particles)
                             {
-                                particle.Location = new Point(rnd.Next(0, Size.Width + 1), rnd.Next(0, Size.Height + 1));
-                                if (MovementDegrees == 0)
-                                    particle.Direction = rnd.Next(0, 361);
-
-                                particle.i = 0;
-                            }
-                            else
-                            {
-                                particle.Location = MoveTowards(particle.Location, particle.Direction, Speed);
-                            }
-                            #endregion
-
-                            #region Render Particles by Style
-                            if (Style == ParticleStyle.Polygons)
-                            {
-                                e.Graphics.DrawEllipse(Pens.Black, new Rectangle(new Point(particle.Location.X - (ParticleSize / 2), particle.Location.Y - (ParticleSize / 2)), new Size(ParticleSize, ParticleSize)));
-
-                                #region Draw lines between particles
-                                
-                                foreach (Controls.Particles.Particle particle2 in particles)
+                                #region Move Particle
+                                if (particle.Location.X >= Size.Width || particle.Location.Y >= Size.Height || particle.Location.X <= 0 || particle.Location.Y <= 0)
                                 {
-                                    if (particle != particle2)
+                                    particle.Location = new Point(rnd.Next(0, Size.Width + 1), rnd.Next(0, Size.Height + 1));
+                                    if (MovementDegrees == 0)
+                                        particle.Direction = rnd.Next(0, 361);
+
+                                    particle.i = 0;
+                                }
+                                else
+                                {
+                                    particle.Location = MoveTowards(particle.Location, particle.Direction, Speed);
+                                }
+                                #endregion
+
+                                #region Render Particles by Style
+                                if (Style == ParticleStyle.Polygons)
+                                {
+                                    e.Graphics.DrawEllipse(Pens.Black, new Rectangle(new Point(particle.Location.X - (ParticleSize / 2), particle.Location.Y - (ParticleSize / 2)), new Size(ParticleSize, ParticleSize)));
+
+                                    #region Draw lines between particles
+                                    foreach (Controls.Particles.Particle particle2 in particles)
                                     {
-                                        float DotDistanceX = particle.Location.X - particle2.Location.X;
-                                        float DotDistanceY = particle.Location.Y - particle2.Location.Y;
-                                        int DotDistance = (int)Math.Sqrt(DotDistanceX * DotDistanceX + DotDistanceY * DotDistanceY);
-                                        if (DotDistance <= Distance)
+                                        if (particle != particle2)
                                         {
-                                            e.Graphics.DrawLine(new Pen(Color.Black), particle.Location.X, particle.Location.Y, particle2.Location.X, particle2.Location.Y);
+                                            float DotDistanceX = particle.Location.X - particle2.Location.X;
+                                            float DotDistanceY = particle.Location.Y - particle2.Location.Y;
+                                            int DotDistance = (int)Math.Sqrt(DotDistanceX * DotDistanceX + DotDistanceY * DotDistanceY);
+                                            if (DotDistance <= Distance)
+                                            {
+                                                e.Graphics.DrawLine(new Pen(Color.Black), particle.Location.X, particle.Location.Y, particle2.Location.X, particle2.Location.Y);
+                                            }
                                         }
                                     }
+
+                                    foreach (Controls.Particles.Particle particle2 in particles)
+                                        particle2.LineDrawn = false; // Reset lines
+                                    #endregion
+                                }
+                                else if (Style == ParticleStyle.Cubes)
+                                {
+                                    // Render 3D Cube Spinning
+                                }
+                                else if (Style == ParticleStyle.Text)
+                                {
+                                    #region Render Text
+                                    e.Graphics.DrawString(particle.Text, CurrentTheme.Font, new SolidBrush(Color.Black), particle.Location);
+                                    #endregion
                                 }
 
-                                foreach (Controls.Particles.Particle particle2 in particles)
-                                    particle2.LineDrawn = false; // Reset lines
+                                else if (Style == ParticleStyle.Dicks)
+                                {
+                                    // Render some PPs on screen ;)
+                                }
                                 #endregion
                             }
-                            else if (Style == ParticleStyle.Cubes)
-                            {
-                                // Render 3D Cube Spinning
-                            }
-                            else if (Style == ParticleStyle.Text)
-                            {
-                                #region Render Text
-                                e.Graphics.DrawString(particle.Text, CurrentTheme.Font, new SolidBrush(Color.Black), particle.Location);
-                                #endregion
-                            }
-                            else if (Style == ParticleStyle.Dicks)
-                            {
-                                // Render some PPs on screen ;)
-
-                                
-
-
-                                e.Graphics.DrawEllipse(Pens.Black, new Rectangle(new Point(particle.Location.X - (ParticleSize / 2), particle.Location.Y - (ParticleSize / 2)), new Size(ParticleSize, ParticleSize)));
-                            }
-                            #endregion
                         }
                         #endregion
                     }
                 }
-                foreach (var control in AddedWindows)
+                foreach (Controls.Window control in AddedWindows)
                 {
                     if (control.GetType() == typeof(Controls.Window))
                     {
@@ -272,7 +273,9 @@ namespace CSharpGUI
                             #region Render Controls
                             if (Controls != null)
                             {
-                                foreach (var con in Controls)
+                                int controls_width = 0;
+                                int controls_height = 0;
+                                foreach (object con in Controls)
                                 {
                                     Controls.IsVisible x = Cast<Controls.IsVisible>(con); // Cast control
                                     if (x.Visible)
@@ -287,8 +290,8 @@ namespace CSharpGUI
                                             bool ButtonLocationPredefined = z.LocationPredefined;
                                             Point ButtonLocation = z.Location;
 
-                                            if (ButtonLocationPredefined) { }
-                                            // Calculate location that is not used
+                                            if (!ButtonLocationPredefined)
+                                                ButtonLocation = new Point(CurrentTheme.ControlMargin.X, CurrentTheme.ControlMargin.Y + controls_height);
                                             #endregion
 
                                             #region Calculate string size and text height
@@ -307,6 +310,13 @@ namespace CSharpGUI
                                             e.Graphics.DrawPath(Pens.Black, p);
                                             e.Graphics.FillPath(new SolidBrush(CurrentTheme.StringColor), p);
                                             #endregion
+
+                                            #region Calculate y_pos
+                                            if (ButtonSize.Width > controls_width)
+                                                controls_width = ButtonSize.Width + CurrentTheme.ControlPadding.X;
+                                            
+                                            controls_height += ButtonSize.Height + CurrentTheme.ControlPadding.Y;
+                                            #endregion
                                         }
                                         else if (con.GetType() == typeof(Controls.Label))
                                         {
@@ -315,18 +325,29 @@ namespace CSharpGUI
                                             string LabelText = z.Text;
                                             bool LabelLocationPredefined = z.LocationPredefined;
                                             Point LabelLocation = z.Location;
+
+                                            if (!LabelLocationPredefined)
+                                                LabelLocation = new Point(CurrentTheme.ControlMargin.X, CurrentTheme.ControlMargin.Y + controls_height);
                                             #endregion
 
                                             #region Calculate string size and text height
-                                            int TextSize = (int)(CurrentTheme.Font.Size - (CurrentTheme.Font.Size / 4));
-                                            Point LabelTextLocation = new Point(Location.X + LabelLocation.X - (TextSize / 4), LabelLocation.Y + w.DragBar.Size.Height - (TextSize / 4));
+                                            int TextFontSize = (int)(CurrentTheme.Font.Size - (CurrentTheme.Font.Size / 4));
+                                            Point LabelTextLocation = new Point(Location.X + LabelLocation.X - (TextFontSize / 4), LabelLocation.Y + w.DragBar.Size.Height - (TextFontSize / 4));
+                                            SizeF TextSize = e.Graphics.MeasureString(LabelText, CurrentTheme.Font);
                                             #endregion
 
                                             #region Render text
                                             p = ResetPath();
-                                            p.AddString(LabelText, CurrentTheme.Font.FontFamily, (int)CurrentTheme.Font.Style, TextSize, LabelTextLocation, new StringFormat());
+                                            p.AddString(LabelText, CurrentTheme.Font.FontFamily, (int)CurrentTheme.Font.Style, TextFontSize, LabelTextLocation, new StringFormat());
                                             e.Graphics.DrawPath(Pens.Black, p);
                                             e.Graphics.FillPath(new SolidBrush(CurrentTheme.StringColor), p);
+                                            #endregion
+
+                                            #region Calculate y_pos
+                                            if (TextSize.Width > controls_width)
+                                                controls_width = (int)TextSize.Width + CurrentTheme.ControlPadding.X;
+
+                                            controls_height += (int)TextSize.Height + CurrentTheme.ControlPadding.Y;
                                             #endregion
                                         }
                                         else if (con.GetType() == typeof(Controls.TextBox))
@@ -342,8 +363,8 @@ namespace CSharpGUI
                                             bool TextBoxLocationPredefined = z.LocationPredefined;
                                             Point TextBoxLocation = z.Location;
 
-                                            if (TextBoxLocationPredefined) { }
-                                            // Calculate location that is not used
+                                            if (!TextBoxLocationPredefined)
+                                                TextBoxLocation = new Point(CurrentTheme.ControlMargin.X, CurrentTheme.ControlMargin.Y + controls_height);
                                             #endregion
 
                                             #region Calculate string size and text height
@@ -362,9 +383,10 @@ namespace CSharpGUI
                                             #endregion
 
                                             #region Render Cursor
+
                                             if (z.Editing)
                                             {
-                                                if (System.Environment.TickCount - z.CursorValue >= 1000)
+                                                if (System.Environment.TickCount - z.CursorValue >= 530)
                                                 {
                                                     z.CursorShown = !z.CursorShown;
                                                     z.CursorValue = 0;
@@ -372,18 +394,8 @@ namespace CSharpGUI
                                                 }
 
                                                 if (z.CursorShown)
-                                                {
-                                                    Point p1 = new Point((int)(TextBoxTextLocation.X + (TextBoxStringSize.Width / 2)), (int)(z.ClickArea.Location.Y + 4));
-                                                    Point p2 = new Point((int)(TextBoxTextLocation.X + (TextBoxStringSize.Width / 2)), (int)(z.ClickArea.Location.Y + z.ClickArea.Size.Height - 4));
-                                                    if (TextBoxText.Length == 0) // Fix 
-                                                    {
-                                                        p1.X = TextBoxTextLocation.X;
-                                                        p2.X = TextBoxTextLocation.X;
-                                                    }
-                                                    e.Graphics.DrawLine(new Pen(CurrentTheme.StringColor, CurrentTheme.OutlineSize / 2), p1, p2);
-                                                }
+                                                    TextBoxText += "|";
                                             }
-
                                             #endregion
 
                                             #region Render string
@@ -392,6 +404,13 @@ namespace CSharpGUI
                                             e.Graphics.DrawPath(Pens.Black, p);
                                             e.Graphics.FillPath(new SolidBrush(CurrentTheme.StringColor), p);
                                             #endregion
+                                            #endregion
+
+                                            #region Calculate y_pos
+                                            if (TextBoxSize.Width > controls_width)
+                                                controls_width = TextBoxSize.Width + CurrentTheme.ControlPadding.X;
+
+                                            controls_height += TextBoxSize.Height + CurrentTheme.ControlPadding.Y;
                                             #endregion
                                         }
                                         else if (con.GetType() == typeof(Controls.Checkbox))
@@ -404,8 +423,8 @@ namespace CSharpGUI
                                             bool CheckboxLocationPredefined = z.LocationPredefined;
                                             Point CheckboxLocation = z.Location;
 
-                                            if (CheckboxLocationPredefined) { }
-                                            // Calculate location that is not used
+                                            if (!CheckboxLocationPredefined)
+                                                CheckboxLocation = new Point(CurrentTheme.ControlMargin.X, CurrentTheme.ControlMargin.Y + controls_height);
                                             #endregion
 
                                             #region Calculate string size and checkbox height
@@ -523,10 +542,80 @@ namespace CSharpGUI
                                             e.Graphics.FillPath(new SolidBrush(CurrentTheme.StringColor), p);
                                             #endregion
                                             #endregion
+
+                                            #region Calculate y_pos
+                                            if (CheckboxRect.Width > controls_width)
+                                                controls_width = CheckboxRect.Width + CurrentTheme.ControlPadding.X;
+
+                                            controls_height += CheckboxRect.Height + CurrentTheme.ControlPadding.Y;
+                                            #endregion
+                                        }
+                                        else if (con.GetType() == typeof(Controls.Slider))
+                                        {
+                                            #region Convert and get variables
+                                            Controls.Slider z = (Controls.Slider)Convert.ChangeType(con, typeof(Controls.Slider)); // Convert to type
+
+                                            string SliderText = z.Text;
+                                            float SliderTextSize = z.TextSize;
+                                            float SliderValue = z.Value;
+                                            float SliderMin = z.Min;
+                                            float SliderMax = z.Max;
+                                            bool SliderFloats = z.Floats;
+                                            Size SliderSize = z.Size;
+                                            bool SliderLocationPredefined = z.LocationPredefined;
+                                            Point SliderLocation = z.Location;
+
+                                            if (!SliderLocationPredefined)
+                                                SliderLocation = new Point(CurrentTheme.ControlMargin.X, CurrentTheme.ControlMargin.Y + controls_height);
+                                            #endregion
+
+                                            #region Render slider line
+                                            e.Graphics.DrawLine(new Pen(CurrentTheme.WindowOutlineColor, 2),
+                                                new Point(Location.X + SliderLocation.X, w.DragBar.Size.Height + SliderLocation.Y + SliderSize.Height / 2),
+                                                new Point(Location.X + SliderLocation.X + SliderSize.Width, w.DragBar.Size.Height + SliderLocation.Y + SliderSize.Height / 2));
+                                            #endregion
+
+                                            #region Render Slider Knob at current value
+                                            // Calculate knob position
+                                            float knob_pos = (float)((SliderSize.Width / (z.Max - z.Min)) * (z.Value - z.Min));
+                                            e.Graphics.FillEllipse(new SolidBrush(CurrentTheme.ControlOutlineColor), new Rectangle(new Point(Location.X + SliderLocation.X - 5 + (int)knob_pos, w.DragBar.Size.Height + SliderLocation.Y + SliderSize.Height - 15), new Size(10, 10)));
+                                            int ValuePosition = (int)((SliderSize.Width / 100) * z.Value);
+                                            #endregion
+
+                                            #region Calculate text size and click area
+                                            SizeF SliderStringSize = e.Graphics.MeasureString(SliderText.Replace("%", SliderValue.ToString()), CurrentTheme.Font);
+
+                                            Point SliderTextLocation = new Point((int)(Location.X + SliderLocation.X + SliderSize.Width + (CurrentTheme.ControlPadding.X * 2)),
+                                                                                (int)(SliderLocation.Y + w.DragBar.Size.Height + (CurrentTheme.ControlPadding.Y / 2)));
+
+                                            z.ClickArea = new Rectangle(new Point(Location.X + SliderLocation.X, w.DragBar.Size.Height + SliderLocation.Y), new Size(SliderSize.Width, SliderSize.Height));
+                                            #endregion
+
+                                            #region Render text
+                                            p = ResetPath();
+                                            p.AddString(SliderText.Replace("%", SliderValue.ToString()), CurrentTheme.Font.FontFamily, (int)CurrentTheme.Font.Style, SliderTextSize, SliderTextLocation, new StringFormat());
+                                            e.Graphics.DrawPath(Pens.Black, p);
+                                            e.Graphics.FillPath(new SolidBrush(CurrentTheme.StringColor), p);
+                                            #endregion
+
+                                            #region Calculate y_pos
+                                            if (SliderSize.Width > controls_width)
+                                                controls_width = SliderSize.Width + (int)SliderStringSize.Width + CurrentTheme.ControlPadding.X;
+
+                                            controls_height += SliderSize.Height + CurrentTheme.ControlPadding.Y;
+                                            #endregion
                                         }
                                     }
                                 }
+                                // if window size is 0,0 then set it to the size of the window
+                                if (!w.SizePredefined)
+                                {
+                                    // set window to fit all controls
+                                    w.Size = new Size(controls_width, controls_height + (w.DragBar.Size.Height / 3));
+                                    w.SizePredefined = true;
+                                }
                             }
+
                             #endregion
                         }
                         #endregion
@@ -579,7 +668,7 @@ namespace CSharpGUI
                     bool Draggable = true;
                     List<Rectangle> dragbars = new List<Rectangle>();
                     List<Rectangle> windows = new List<Rectangle>();
-                    foreach (var control in AddedWindows)
+                    Parallel.ForEach(AddedWindows, (control) =>
                     {
                         if (control.GetType() == typeof(Controls.Window))
                         {
@@ -587,19 +676,21 @@ namespace CSharpGUI
                             dragbars.Add(new Rectangle(w.DragBar.Location, w.DragBar.Size));
                             windows.Add(new Rectangle(w.Location, w.Size));
                         }
-                    }
+                    });
 
                     bool DragbarBlocked = false;
-                    foreach (Rectangle rect in windows)
+                    Parallel.ForEach(windows, (rect) =>
                     {
                         if (rect == new Rectangle(Window.Location, Window.Size))
                         {
                             Rectangle dragbar;
-                            foreach (Rectangle rect2 in dragbars)
+                            Parallel.ForEach(dragbars, (rect2) =>
+                            {
                                 if (rect2 == new Rectangle(Window.DragBar.Location, Window.DragBar.Size))
                                     dragbar = rect2;
+                            });
 
-                            foreach (Rectangle rect3 in windows)
+                            Parallel.ForEach(windows, (rect3) =>
                             {
                                 if (rect3 != new Rectangle(AddedWindows[AddedWindows.Count - 1].Location, AddedWindows[AddedWindows.Count - 1].Size))
                                 {
@@ -608,9 +699,9 @@ namespace CSharpGUI
                                 {
                                     DragbarBlocked = true;
                                 }
-                            }
+                            });
                         }
-                    }
+                    });
 
                     if (Draggable && !DragbarBlocked)
                     {
@@ -626,7 +717,7 @@ namespace CSharpGUI
             #region Button Clicks
             if (e.Button == MouseButtons.Left)
             {
-                foreach (Controls.Button button in Window.Controls.OfType<Controls.Button>())
+                Parallel.ForEach(Window.Controls.OfType<Controls.Button>(), (button) =>
                 {
                     if (button.ClickArea.IsPointInside(MousePos) && button.Visible)
                     {
@@ -640,41 +731,68 @@ namespace CSharpGUI
                         }
                         catch { }
                     }
-                }
+                });
             }
             #endregion
 
             #region Checkbox Clicks
             if (e.Button == MouseButtons.Left)
             {
-                foreach (Controls.Checkbox checkbox in Window.Controls.OfType<Controls.Checkbox>())
+                Parallel.ForEach(Window.Controls.OfType<Controls.Checkbox>(), (checkbox) =>
                 {
                     if (checkbox.ClickArea.IsPointInside(MousePos) && checkbox.Visible)
                     {
                         checkbox.Checked = !checkbox.Checked;
                     }
-                }
+                });
             }
             #endregion
 
             #region TextBox Editing
             if (e.Button == MouseButtons.Left)
             {
-                foreach (Controls.TextBox textbox in Window.Controls.OfType<Controls.TextBox>())
+                Parallel.ForEach(Window.Controls.OfType<Controls.TextBox>(), (textbox) =>
                 {
                     if (textbox.ClickArea.IsPointInside(MousePos) && textbox.Visible)
                     {
                         textbox.Editing = true;
                         textbox.CursorShown = true;
                         textbox.CursorValue = System.Environment.TickCount;
-                        ;
                     }
                     else
                     {
                         textbox.Editing = false;
                         textbox.CursorShown = false;
                     }
-                }
+                });
+            }
+            #endregion
+
+            #region Slider Editing
+            if (e.Button == MouseButtons.Left)
+            {
+                Parallel.ForEach(Window.Controls.OfType<Controls.Slider>(), (slider) =>
+                {
+                    if (slider.ClickArea.IsPointInside(MousePos) && slider.Visible && e.Button == MouseButtons.Left)
+                    {
+                        // convert mousepos to slider pos
+                        float pos = (float)(MousePos.X - slider.ClickArea.X) / (float)slider.ClickArea.Width;
+                        if (pos < 0)
+                            pos = 0;
+                        if (pos > 1)
+                            pos = 1;
+
+                        // get slider value from pos
+                        float value = slider.Min + (slider.Max - slider.Min) * pos;
+                        if (slider.Floats) value = (int)value;
+                        slider.Value = (float)Math.Round((double)value, 2);
+
+                        slider.Dragging = true;
+                        Window.MouseGrabPoint = MousePos;
+                    }
+                    else
+                        slider.Dragging = false;
+                });
             }
             #endregion
         }
@@ -707,11 +825,41 @@ namespace CSharpGUI
                 TargetForm.Invalidate();
             }
             #endregion
+
+            #region Slider Drag
+            Parallel.ForEach(Window.Controls.OfType<Controls.Slider>(), (slider) =>
+            {
+                // drag knob
+                if (slider.Dragging)
+                {
+                    Point MousePos = e.Location;
+
+                    // convert mousepos to slider pos
+                    float pos = (float)(MousePos.X - slider.ClickArea.X) / (float)slider.ClickArea.Width;
+                    if (pos < 0)
+                        pos = 0;
+                    if (pos > 1)
+                        pos = 1;
+
+                    // get slider value from pos
+                    float value = slider.Min + (slider.Max - slider.Min) * pos;
+                    if (slider.Floats) value = (int)value;
+                    slider.Value = (float)Math.Round((double)value, 2);
+                }
+            });
+            #endregion
         }
         public void Window_MouseUp(Controls.Window Window)
         {
             #region Reset Window Drag
             Window.Dragging = false;
+
+            Parallel.ForEach(Window.Controls.OfType<Controls.Slider>(), (slider) =>
+            {
+                slider.Dragging = false;
+            });
+
+
             TargetForm.Invalidate();
             #endregion
         }
@@ -719,7 +867,7 @@ namespace CSharpGUI
         public void Window_KeyDown(object sender, KeyEventArgs e, Controls.Window Window)
         {
             #region Write in textbox
-            foreach (Controls.TextBox textbox in Window.Controls.OfType<Controls.TextBox>())
+            Parallel.ForEach(Window.Controls.OfType<Controls.TextBox>(), (textbox) =>
             {
                 if (textbox.Editing)
                 {
@@ -785,17 +933,17 @@ namespace CSharpGUI
                     }
                     e.SuppressKeyPress = true; // Block the keypress to interact with anything else other than the textbox
                 }
-            }
+            });
             #endregion
         }
 
         public void Window_ResizeForm(object sender, EventArgs e)
         {
             #region Update particle size
-            foreach (Controls.Particles particle in AddedParticles)
+            Parallel.ForEach(AddedParticles, (particle) =>
             {
                 particle.Size = TargetForm.Size;
-            }
+            });
             #endregion
         }
         #endregion
@@ -823,7 +971,7 @@ namespace CSharpGUI
         public string CalculateStringByWidth(string String, float Width, Font Font, Graphics Graphics, out SizeF StringSize)
         {
             string NewString = String;
-            ReCalcString:
+        ReCalcString:
             StringSize = Graphics.MeasureString(NewString, Font);
             if (StringSize.Width > Width - Graphics.MeasureString("...", Font).Width)
             {
@@ -843,7 +991,7 @@ namespace CSharpGUI
         {
             float FontSize = 1000.0f;
 
-            ReCalcString:
+        ReCalcString:
             FontSize -= 0.01f;
             Font font = new Font(FontFamily, FontSize, FontStyle);
             SizeF StringSize = Graphics.MeasureString(String, font);
@@ -873,7 +1021,7 @@ namespace CSharpGUI
                .ToList().Contains(memberInfo.Name)).ToList();
             PropertyInfo propertyInfo;
             object value;
-            foreach (var memberInfo in members)
+            foreach (MemberInfo memberInfo in members)
             {
                 propertyInfo = typeof(T).GetProperty(memberInfo.Name);
                 value = @class.GetType().GetProperty(memberInfo.Name).GetValue(@class, null);
@@ -891,6 +1039,7 @@ namespace CSharpGUI
             {
                 public string Title { get; set; }
                 public Size Size { get; set; }
+                public bool SizePredefined { get; set; }
                 public Point Location { get; set; }
                 public bool Dragable { get; set; }
                 public bool Window3D { get; set; }
@@ -905,6 +1054,7 @@ namespace CSharpGUI
                 {
                     Title = title;
                     Size = size;
+                    SizePredefined = !(size == new Size(0, 0));
                     Dragable = dragable;
                     Window3D = window3d;
                     Outline = outline;
@@ -938,7 +1088,7 @@ namespace CSharpGUI
                     TextLimit = textlimit;
                     NumbersOnly = numbersonly;
                     Size = size;
-                    LocationPredefined = true;
+                    LocationPredefined = false;
                     Location = new Point(-12345, -12345);
                     this.RecalculateTextSize(currentGUI);
 
@@ -955,7 +1105,7 @@ namespace CSharpGUI
                     TextLimit = textlimit;
                     NumbersOnly = numbersonly;
                     Size = size;
-                    LocationPredefined = false;
+                    LocationPredefined = true;
                     Location = location;
                     this.RecalculateTextSize(currentGUI);
 
@@ -976,7 +1126,7 @@ namespace CSharpGUI
                 public Label(CSharpGUI currentGUI, Window window, string text) // Without location
                 {
                     Text = text;
-                    LocationPredefined = true;
+                    LocationPredefined = false;
                     Location = new Point(-12345, -12345);
 
                     Visible = true;
@@ -986,7 +1136,7 @@ namespace CSharpGUI
                 public Label(CSharpGUI currentGUI, Window window, string text, Point location) // With location
                 {
                     Text = text;
-                    LocationPredefined = false;
+                    LocationPredefined = true;
                     Location = location;
 
                     Visible = true;
@@ -1064,6 +1214,54 @@ namespace CSharpGUI
                     Color = color;
                     LocationPredefined = true;
                     Location = location;
+
+                    Visible = true;
+
+                    new CSharpGUI().AddControl(currentGUI, this, window);
+                }
+            }
+            public class Slider
+            {
+                public string Text { get; set; }
+                public float TextSize { get; set; }
+                public float Value { get; set; }
+                public float Min { get; set; }
+                public float Max { get; set; }
+                public bool Floats { get; set; }
+                public Size Size { get; set; }
+                public Rectangle ClickArea { get; set; }
+                public bool LocationPredefined { get; set; }
+                public Point Location { get; set; }
+                public bool Dragging { get; set; }
+                public Point MouseGrabPoint { get; set; }
+                public bool Visible { get; set; }
+                public Slider(CSharpGUI currentGUI, Window window, string text, float value, float min, float max, bool floats, Size size) // Without location
+                {
+                    Text = text;
+                    Value = value;
+                    Min = min;
+                    Max = max;
+                    Floats = floats;
+                    Size = size;
+                    LocationPredefined = false;
+                    Location = new Point(-12345, -12345);
+                    this.RecalculateTextSize(currentGUI);
+
+                    Visible = true;
+
+                    new CSharpGUI().AddControl(currentGUI, this, window);
+                }
+                public Slider(CSharpGUI currentGUI, Window window, string text, float value, float min, float max, bool floats, Size size, Point location) // With location
+                {
+                    Text = text;
+                    Value = value;
+                    Min = min;
+                    Max = max;
+                    Floats = floats;
+                    Size = size;
+                    LocationPredefined = true;
+                    Location = location;
+                    this.RecalculateTextSize(currentGUI);
 
                     Visible = true;
 
@@ -1194,6 +1392,13 @@ namespace CSharpGUI
             else if (control.GetType() == typeof(CSharpGUI.Controls.TextBox))
             {
                 CSharpGUI.Controls.TextBox z = (CSharpGUI.Controls.TextBox)Convert.ChangeType(control, typeof(CSharpGUI.Controls.TextBox)); // Convert to type
+
+                z.ClickArea = new Rectangle(new Point(z.Location.X - 1), new Size(z.Size.Width + 2, z.Size.Height + 2));
+                z.TextSize = CSharpGUI.GetBiggestFontSize(z.Text, currentGUI.CurrentTheme.Font.FontFamily, currentGUI.CurrentTheme.Font.Style, currentGUI.Overlay, z.ClickArea);
+            }
+            else if (control.GetType() == typeof(CSharpGUI.Controls.Slider))
+            {
+                CSharpGUI.Controls.Slider z = (CSharpGUI.Controls.Slider)Convert.ChangeType(control, typeof(CSharpGUI.Controls.Slider)); // Convert to type
 
                 z.ClickArea = new Rectangle(new Point(z.Location.X - 1), new Size(z.Size.Width + 2, z.Size.Height + 2));
                 z.TextSize = CSharpGUI.GetBiggestFontSize(z.Text, currentGUI.CurrentTheme.Font.FontFamily, currentGUI.CurrentTheme.Font.Style, currentGUI.Overlay, z.ClickArea);

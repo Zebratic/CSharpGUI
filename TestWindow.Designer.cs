@@ -1,5 +1,5 @@
 ﻿
-namespace CSharpGUI
+namespace CSharpGUI_Test
 {
     partial class TestWindow
     {
